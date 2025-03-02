@@ -76,10 +76,15 @@ function showAnswers(answers) {
 
     answersContainer.innerHTML = '';
     answers.forEach((answer, index) => {
-        const option = document.createElement('option');
-        option.textContent = answer;
-        option.value = index;
-        answersContainer.appendChild(option);
+        const element = document.createElement('label');
+        element.classList.add("list-group-item");
+
+        const str = `<input class="form-check-input me-1" type="radio" name="answer" value="${index}"> ${answer}`;
+
+        element.innerHTML = str;
+        answersContainer.appendChild(element);
+
+
 
     });
 
@@ -94,7 +99,8 @@ function showSum(sum) {
 
 function showCorrectAnswer(correctAnswer) {
     const correctAnswerContainer = document.getElementById('sum');
-    correctAnswerContainer.innerHTML = `Правильна відповідь "${correctAnswer}" <br> Ваша сума анульована`;}
+    correctAnswerContainer.innerHTML = `Правильна відповідь "${correctAnswer}" <br> Ваша сума анульована`;
+}
 
 function finishQuiz() {
     const quizContainer = document.getElementById('question-container');
@@ -102,31 +108,45 @@ function finishQuiz() {
     const result = document.createElement('p');
     result.textContent = `Ви набрали ${sum} балів з ${questions.length} питань`;
     quizContainer.appendChild(result);
-   
+
 }
 
 function showProgress(progress) {
     const progressContainer = document.getElementById('progress');
-    progressContainer.style.width = `${100/6*progress}%`;
+    progressContainer.style.width = `${100 / 6 * progress}%`;
     progressContainer.textContent = `${progress}`;
 
 }
 
 async function askQuestion() {
     const answersContainer = document.getElementById('answers');
-    const selectedAnswerIndex = answersContainer.value;
+    let selectedAnswerIndex = null;
+
+    // Перебираємо всі input елементи в answersContainer
+    for (let i = 0; i < answersContainer.children.length; i++) {
+        const input = answersContainer.children[i].querySelector('input');
+        if (input.checked) {
+            selectedAnswerIndex = i; // Зберігаємо індекс вибраного варіанта
+            break; // Виходимо з циклу, оскільки вибрано тільки один варіант
+        }
+    }
+
+    console.log(selectedAnswerIndex); // Виведе індекс вибраного варіанта
+
+
+
     let question = questions[currentQuestionIndex];
-    showProgress(currentQuestionIndex +1
+    showProgress(currentQuestionIndex + 1
     );
     if (question.correctAnswer == selectedAnswerIndex) {
-        sum=sum+1000;
+        sum = sum + 1000;
         showSum(sum);
     }
-    else { 
-        sum=0;
+    else {
+        sum = 0;
         showCorrectAnswer(question.answers[question.correctAnswer]);
         finishQuiz();
-    
+
     }
 
     currentQuestionIndex++;
